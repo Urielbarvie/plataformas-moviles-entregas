@@ -1,0 +1,40 @@
+/*1*/
+.titulo {
+    text-align: center;
+}
+/*2*/
+.fuente.parrafo{
+    font-family: serif;
+}
+/*3*/
+#primer-parrafo {
+    background-color: #CEE !important;
+}
+/*4*/
+#primer-parrafo em {
+    color: #933;
+}
+/*5*/
+a {
+    outline: 1px solid #333;
+}
+/*6*/
+body p.fuente.parrafo {
+    opacity: 100% !important;
+}
+
+/*7*/
+p.parrafo:not([id]) {
+    background-color: rgba(190, 120, 240, 0.6);
+}
+/*bonustrack*/
+/*1*/
+body p.fuente.parrafo {
+    color: #000 !important;
+}
+
+/*Bonus 2:*/
+.complicado {
+    font-weight: bold;
+    color: #C62 !important;
+}
