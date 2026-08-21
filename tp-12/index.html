@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Editor de Texto - DOM y JavaScript</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Clases CSS de utilidad para los estilos del texto */
+        .texto-negrita {
+            font-weight: bold;
+        }
+        .texto-cursiva {
+            font-style: italic;
+        }
+        .texto-subrayado {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container my-1 my-sm-2 my-md-4 my-lg-5">
+        <h1>Editor de Texto</h1>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                
+                <!-- Entrada de texto para editar el contenido en tiempo real -->
+                <div class="mb-4">
+                    <label for="input-editor" class="form-label h5">Editar Contenido</label>
+                    <input type="text" id="input-editor" class="form-control" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec elementum auctor libero, vel imperdiet est. Etiam blandit facilisis ex, nec cursus metus pharetra quis. Fusce imperdiet nisl nibh, ac aliquet ante elementum vitae.">
+                </div>
+
+                <h2>Vista Previa</h2>
+                <!-- Párrafo de vista previa donde se aplican los estilos -->
+                <p class="texto p-3 bg-white border rounded" id="texto">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec elementum auctor libero, vel imperdiet est. Etiam blandit facilisis ex, nec cursus metus pharetra quis. Fusce imperdiet nisl nibh, ac aliquet ante elementum vitae.</p>
+                
+                <hr class="hr my-4">
+                
+                <h2>Opciones de Formato</h2>
+                <div class="row g-2">
+                    <!-- Botones Originales de Estilo -->
+                    <div class="col-12 col-md-3">
+                        <button id="btn-negrita" class="btn d-block w-100 btn-outline-primary" data-formato="negrita">
+                            Bold (Negrita)
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button id="btn-cursiva" class="btn d-block w-100 btn-outline-primary" data-formato="cursiva">
+                            Italic (Cursiva)
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button id="btn-subrayado" class="btn d-block w-100 btn-outline-primary" data-formato="subrayado">
+                            Underline (Subrayado)
+                        </button>
+                    </div>
+
+                    <!-- NUEVO: Botón para cambiar el Color del texto -->
+                    <div class="col-12 col-md-3">
+                        <button id="btn-color" class="btn d-block w-100 btn-outline-primary" data-formato="color">
+                            Color (Rojo / Negro)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- NUEVO: Controles de tamaño de letra y extras -->
+                <div class="row g-2 mt-3 align-items-center">
+                    <div class="col-12 col-md-6 d-flex align-items-center gap-2">
+                        <label for="input-rango-tamano" class="form-label mb-0 text-nowrap">Tamaño de letra:</label>
+                        <input type="range" class="form-range" id="input-rango-tamano" min="12" max="48" value="16">
+                        <span id="label-tamano" class="badge bg-secondary">16px</span>
+                    </div>
+
+                    <!-- BONUS: Limpiar todos los formatos aplicados -->
+                    <div class="col-12 col-md-6 text-md-end">
+                        <button id="btn-limpiar" class="btn btn-danger">
+                            Limpiar Formatos
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script type="text/javascript">
+        // Elementos del DOM que vamos a manipular frecuentemente
+        const parrafoTexto = document.getElementById('texto');
+        const inputEditor = document.getElementById('input-editor');
+        const inputRangoTamano = document.getElementById('input-rango-tamano');
+        const labelTamano = document.getElementById('label-tamano');
+        const btnLimpiar = document.getElementById('btn-limpiar');
+
+        /**
+         * Sincronización del Input con el Párrafo
+         * Al escribir en el input, actualiza inmediatamente el texto de la vista previa
+         */
+        inputEditor.addEventListener('input', (e) => {
+            parrafoTexto.textContent = e.target.value;
+        });
+
+        /**
+         * Control del Tamaño del Texto
+         * Modifica dinámicamente la propiedad fontSize según la barra de desplazamiento
+         */
+        inputRangoTamano.addEventListener('input', (e) => {
+            const nuevoTamano = e.target.value;
+            parrafoTexto.style.fontSize = nuevoTamano + 'px';
+            labelTamano.textContent = nuevoTamano + 'px';
+        });
+
+        /**
+         * Función auxiliar para actualizar el estilo visual del botón
+         * Activa (btn-primary) o desactiva (btn-outline-primary) el botón correspondiente
+         */
+        function actualizarEstadoBoton(idBoton, condicionActivo) {
+            const boton = document.getElementById(idBoton);
+            if (condicionActivo) {
+                boton.classList.remove('btn-outline-primary');
+                boton.classList.add('btn-primary');
+            } else {
+                boton.classList.remove('btn-primary');
+                boton.classList.add('btn-outline-primary');
+            }
+        }
+
+        /**
+         * 01 - funcionNegrita()
+         * Activa/desactiva la clase CSS de negrita y actualiza el botón.
+         */
+        function funcionNegrita() {
+            parrafoTexto.classList.toggle('texto-negrita');
+            const estaActivo = parrafoTexto.classList.contains('texto-negrita');
+            actualizarEstadoBoton('btn-negrita', estaActivo);
+        }
+
+        /**
+         * 02 - funcionCursiva()
+         * Activa/desactiva la clase CSS de cursiva y actualiza el botón.
+         */
+        function funcionCursiva() {
+            parrafoTexto.classList.toggle('texto-cursiva');
+            const estaActivo = parrafoTexto.classList.contains('texto-cursiva');
+            actualizarEstadoBoton('btn-cursiva', estaActivo);
+        }
+
+        /**
+         * 03 - funcionSubrayado()
+         * Activa/desactiva la clase CSS de subrayado y actualiza el botón.
+         */
+        function funcionSubrayado() {
+            parrafoTexto.classList.toggle('texto-subrayado');
+            const estaActivo = parrafoTexto.classList.contains('texto-subrayado');
+            actualizarEstadoBoton('btn-subrayado', estaActivo);
+        }
+
+        /**
+         * 04 - Nueva Función: funcionColor()
+         * Alterne el color del texto entre rojo y negro por defecto.
+         */
+        function funcionColor() {
+            if (parrafoTexto.style.color === 'red') {
+                parrafoTexto.style.color = ''; // Vuelve al color por defecto 
+                actualizarEstadoBoton('btn-color', false);
+            } else {
+                parrafoTexto.style.color = 'red';
+                actualizarEstadoBoton('btn-color', true);
+            }
+        }
+
+        /**
+         * BONUS: Función para Limpiar Todos los Formatos
+         */
+        btnLimpiar.addEventListener('click', () => {
+            // Remover todas las clases de estilo
+            parrafoTexto.classList.remove('texto-negrita', 'texto-cursiva', 'texto-subrayado');
+            
+            // Restablecer estilos CSS en línea 
+            parrafoTexto.style.color = '';
+            parrafoTexto.style.fontSize = '16px';
+            
+            // Sincronizar de vuelta los controles de UI
+            inputRangoTamano.value = 16;
+            labelTamano.textContent = '16px';
+
+            // Apagar los botones de estado
+            actualizarEstadoBoton('btn-negrita', false);
+            actualizarEstadoBoton('btn-cursiva', false);
+            actualizarEstadoBoton('btn-subrayado', false);
+            actualizarEstadoBoton('btn-color', false);
+        });
+
+
+        /**
+         * Manejador de botones 
+         */
+        function handlerBoton(e) {
+            const funcionBoton = e.target.dataset.formato;
+            switch (funcionBoton) {
+                case 'negrita':
+                    funcionNegrita();
+                    break;
+                case 'cursiva':
+                    funcionCursiva();
+                    break;
+                case 'subrayado':
+                    funcionSubrayado();
+                    break;
+                case 'color': // Vinculamos el nuevo caso
+                    funcionColor();
+                    break;
+            }
+        }
+
+        // Añadimos el listener para todos los botones que tengan la clase 'btn'
+        document.querySelectorAll('button.btn').forEach(e => e.addEventListener('click', handlerBoton));
+    </script>
+</body>
+</html>
